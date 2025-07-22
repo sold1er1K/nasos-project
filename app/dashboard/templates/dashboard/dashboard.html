@@ -1,0 +1,161 @@
+{% extends "dashboard/sidebar.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}">
+<div class="dashboard-container">
+    <div class="user-list-container">
+        <div class="filter-controls">
+            <div class="filter-group">
+                <button class="filter-btn" id="filter-toggle">Фильтр ▼</button>
+                <button class="reset-btn" id="reset-filter">Сбросить фильтр</button>
+            </div>
+            <div class="filter-dropdown" id="filter-dropdown">
+                <div class="filter-option" data-filter="today">Сегодня</div>
+                <div class="filter-option" data-filter="week">Неделя</div>
+                <div class="filter-option" data-filter="month">Месяц</div>
+                <div class="filter-option">
+                    <input type="date" id="date-filter" class="date-input">
+                </div>
+                <div class="filter-option">
+                    <select id="month-filter" class="select-input">
+                        <option value="">Выбрать месяц</option>
+                        <option value="01">Январь</option>
+                        <option value="02">Февраль</option>
+                        <option value="03">Март</option>
+                        <option value="04">Апрель</option>
+                        <option value="05">Май</option>
+                        <option value="06">Июнь</option>
+                        <option value="07">Июль</option>
+                        <option value="08">Август</option>
+                        <option value="09">Сентябрь</option>
+                        <option value="10">Октябрь</option>
+                        <option value="11">Ноябрь</option>
+                        <option value="12">Декабрь</option>
+                    </select>
+                </div>
+                <div class="filter-option">
+                    <select id="group-filter" class="select-input">
+                        <option value="">Все группы</option>
+                        <option value="ПИ-201">ПИ-201</option>
+                        <option value="ПИ-202">ПИ-202</option>
+                        <option value="ПИ-203">ПИ-203</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <h2 class="section-title">Список пользователей</h2>
+        <div class="user-list">
+            <div class="user-card active">
+                <div class="user-name">Иванов Иван Иванович</div>
+                <div class="user-role">Студент</div>
+                <div class="user-group">Группа: 121202</div>
+            </div>
+            <div class="user-card">
+                <div class="user-name">Петрова Анна Сергеевна</div>
+                <div class="user-role">Студент</div>
+                <div class="user-group">Группа: 121202</div>
+            </div>
+            <div class="user-card">
+                <div class="user-name">Сидоров Алексей Петрович</div>
+                <div class="user-role">Преподаватель</div>
+            </div>
+            <div class="user-card">
+                <div class="user-name">Кузнецова Елена Владимировна</div>
+                <div class="user-role">Студент</div>
+                <div class="user-group">Группа: 122203</div>
+            </div>
+            <div class="user-card">
+                <div class="user-name">Смирнов Дмитрий Олегович</div>
+                <div class="user-role">Студент</div>
+                <div class="user-group">Группа: 128201</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="event-journal">
+        <h2 class="section-title">Журнал событий</h2>
+        <table class="event-table">
+            <thead>
+                <tr>
+                    <th>Вид события</th>
+                    <th>Дата начала</th>
+                    <th>Длительность нормативная</th>
+                    <th>Длительность фактическая</th>
+                    <th>Результат</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Тестирование</td>
+                    <td>15.05.2023 10:00</td>
+                    <td>30 мин</td>
+                    <td>25 мин</td>
+                    <td>85%</td>
+                </tr>
+                <tr>
+                    <td>Обучение</td>
+                    <td>12.05.2023 14:30</td>
+                    <td>-</td>
+                    <td>45 мин</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>Тестирование</td>
+                    <td>10.05.2023 09:15</td>
+                    <td>45 мин</td>
+                    <td>50 мин</td>
+                    <td>92%</td>
+                </tr>
+                <tr>
+                    <td>Обучение</td>
+                    <td>05.05.2023 16:00</td>
+                    <td>-</td>
+                    <td>60 мин</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>Тестирование</td>
+                    <td>28.04.2023 11:30</td>
+                    <td>40 мин</td>
+                    <td>35 мин</td>
+                    <td>78%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="user-details">
+        <h2 class="section-title">Информация о пользователе</h2>
+        <div class="user-info">
+            <div class="info-row">
+                <span class="info-label">ФИО:</span>
+                <span class="info-value">Иванов Иван Иванович</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Роль:</span>
+                <span class="info-value">Студент</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Группа:</span>
+                <span class="info-value">121202</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Последняя активность:</span>
+                <span class="info-value">15.05.2023 10:25</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Средний результат:</span>
+                <span class="info-value">82.5%</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Прогресс:</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 65%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'dashboard/js/dashboard.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тестирование</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: var(--dark-color);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #6c757d;
+        }
+
+        .tests-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .test-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .test-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--accent-color);
+            transition: var(--transition);
+        }
+
+        .test-card:hover::before {
+            width: 8px;
+            background: var(--primary-color);
+        }
+
+        .test-number {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-right: 20px;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .test-info {
+            flex-grow: 1;
+        }
+
+        .test-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .test-desc {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        /* Модальное окно */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            box-shadow: var(--box-shadow);
+            transform: translateY(20px);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            color: #6c757d;
+            cursor: pointer;
+            transition: var(--transition);
+            background: none;
+            border: none;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-btn:hover {
+            color: var(--dark-color);
+            background: #f1f1f1;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .test-number {
+                font-size: 1.5rem;
+                min-width: 40px;
+                margin-right: 15px;
+            }
+
+            .test-title {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Система тестирования</h1>
+            <p class="subtitle">Выберите тест для прохождения</p>
+        </header>
+
+        <div class="tests-list">
+            <div class="test-card" onclick="openModal(1)">
+                <div class="test-number">01</div>
+                <div class="test-info">
+                    <div class="test-title">Подача воды от цистерны</div>
+                    <div class="test-desc">11 вопросов · 20 минут</div>
+                </div>
+            </div>
+
+            <div class="test-card" onclick="openModal(2)">
+                <div class="test-number">02</div>
+                <div class="test-info">
+                    <div class="test-title">Забор воды от открытого водоисточника</div>
+                    <div class="test-desc">8 вопросов · 15 минут</div>
+                </div>
+            </div>
+
+            <div class="test-card" onclick="openModal(3)">
+                <div class="test-number">03</div>
+                <div class="test-info">
+                    <div class="test-title">Забор воды от гидранта</div>
+                    <div class="test-desc">3 вопроса · 5 минут</div>
+                </div>
+            </div>
+
+            <div class="test-card" onclick="openModal(4)">
+                <div class="test-number">04</div>
+                <div class="test-info">
+                    <div class="test-title">Подача воды от цистерны через стационарный лафетный ствол</div>
+                    <div class="test-desc">5 вопросов · 10 минут</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно регистрации -->
+    <div class="modal" id="registration-modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h2 class="modal-title">Регистрационные данные</h2>
+            <form id="registration-form" onsubmit="startTest(event)">
+                <div class="form-group">
+                    <label for="last-name" class="form-label">Фамилия</label>
+                    <input type="text" id="last-name" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="first-name" class="form-label">Имя</label>
+                    <input type="text" id="first-name" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="middle-name" class="form-label">Отчество</label>
+                    <input type="text" id="middle-name" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="role" class="form-label">Роль</label>
+                    <select id="role" class="form-control" onchange="toggleGroupField()" required>
+                        <option value="">Выберите роль</option>
+                        <option value="student">Студент</option>
+                        <option value="teacher">Преподаватель</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="group-field" style="display: none;">
+                    <label for="group" class="form-label">Номер группы</label>
+                    <input type="text" id="group" class="form-control">
+                </div>
+
+                <input type="hidden" id="test-id">
+                <button type="submit" class="submit-btn">Начать тест</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentTestId = 0;
+
+        function openModal(testId) {
+            currentTestId = testId;
+            document.getElementById('test-id').value = testId;
+            const modal = document.getElementById('registration-modal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('registration-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function toggleGroupField() {
+            const role = document.getElementById('role').value;
+            const groupField = document.getElementById('group-field');
+
+            if (role === 'student') {
+                groupField.style.display = 'block';
+                document.getElementById('group').required = true;
+            } else {
+                groupField.style.display = 'none';
+                document.getElementById('group').required = false;
+            }
+        }
+
+        function startTest(event) {
+            event.preventDefault();
+
+            // Сбор данных формы
+            const formData = {
+                lastName: document.getElementById('last-name').value,
+                firstName: document.getElementById('first-name').value,
+                middleName: document.getElementById('middle-name').value,
+                role: document.getElementById('role').value,
+                group: document.getElementById('role').value === 'student'
+                      ? document.getElementById('group').value
+                      : null,
+                testId: currentTestId
+            };
+
+            console.log('Данные формы:', formData);
+
+            // Закрываем модальное окно
+            closeModal();
+
+            // Перенаправление на тест (заглушка)
+            setTimeout(() => {
+                alert(`Начинаем тест №${currentTestId}\nФИО: ${formData.lastName} ${formData.firstName} ${formData.middleName}\nРоль: ${formData.role}${formData.group ? '\nГруппа: ' + formData.group : ''}`);
+                // window.location.href = `/test/${currentTestId}`;
+            }, 300);
+        }
+
+        // Закрытие модального окна при клике вне его
+        document.getElementById('registration-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
