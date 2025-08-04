@@ -1,8 +1,13 @@
 import json
+from django.utils import timezone
+
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import User
+from django.views import View
+from .models import ScenarioHistory
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 def dashboard(request):
@@ -16,6 +21,9 @@ def dashboard(request):
 
 def users_page(request):
     return render(request, 'dashboard/users.html')
+
+def report_page(request):
+    return render(request, 'dashboard/report.html')
 
 
 @csrf_exempt
@@ -123,3 +131,80 @@ def users_api(request, user_id=None):
             return JsonResponse({'error': str(e)}, status=400)
 
     return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+class ScenarioHistoryView(View):
+    def get(self, request):
+        user_id = request.GET.get('user_id')
+
+        if not user_id:
+            return JsonResponse({'error': 'Не указан ID пользователя'}, status=400)
+
+        history = ScenarioHistory.objects.filter(user_id=user_id).order_by('-start_time')
+
+        history_data = []
+        for item in history:
+            history_data.append({
+                'id': item.id,
+                'scenario_id': item.scenario_id,
+                'start_time': item.start_time,
+                'end_time': item.end_time,
+                'duration': item.duration,
+                'status': item.status,
+                'result': item.result
+            })
+
+        return JsonResponse(
+            {'history': history_data},
+            encoder=DjangoJSONEncoder,
+            safe=False
+        )
+
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from .models import ScenarioHistory
+import json
+
+
+@csrf_exempt
+def complete_scenario(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            print(data)
+            history_id = data.get('history_id')
+            print(history_id)
+            status = data.get('status', 'completed')
+            print(status)
+
+            try:
+                scenario = ScenarioHistory.objects.get(id=history_id)
+            except ScenarioHistory.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Scenario not found'}, status=404)
+
+            # Обновляем статус И время завершения
+            scenario.status = status
+            scenario.end_time = timezone.now()
+
+            # Рассчитываем продолжительность, если есть start_time
+            if scenario.start_time:
+                scenario.duration = (scenario.end_time - scenario.start_time).total_seconds()
+
+            scenario.save()
+
+            return JsonResponse({
+                'success': True,
+                'message': 'Scenario completed successfully',
+                'data': {
+                    'id': scenario.id,
+                    'duration': scenario.duration,
+                    'status': scenario.status,
+                    'end_time': scenario.end_time.isoformat()  # Добавляем end_time в ответ
+                }
+            })
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)

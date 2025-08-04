@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        groupFilter.innerHTML = '<option value="">Все группы</option>';
+        groupFilter.innerHTML = '<option value="">Все взводы</option>';
         allGroups.forEach(group => {
             const option = document.createElement('option');
             option.value = group;
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
             row.dataset.userId = user.id;
             row.innerHTML = `
                 <td>${user.last_name} ${user.first_name} ${user.middle_name || ''}</td>
-                <td>${user.role === 'student' ? 'Студент' : 'Преподаватель'}</td>
+                <td>${user.role === 'student' ? 'Курсант' : 'Преподаватель'}</td>
                 <td>${user.group || '-'}</td>
                 <td>${new Date(user.created_at).toLocaleDateString()}</td>
                 <td class="actions">

@@ -23,11 +23,11 @@
             </div>
             <select id="role-filter" class="filter-select">
                 <option value="">Все роли</option>
-                <option value="student">Студент</option>
+                <option value="student">Курсант</option>
                 <option value="teacher">Преподаватель</option>
             </select>
             <select id="group-filter" class="filter-select">
-                <option value="">Все группы</option>
+                <option value="">Все взводы</option>
             </select>
             <button class="reset-btn" id="reset-filters">Сбросить</button>
         </div>
@@ -39,7 +39,7 @@
                 <tr>
                     <th>ФИО</th>
                     <th>Роль</th>
-                    <th>Группа</th>
+                    <th>Взвод</th>
                     <th>Дата регистрации</th>
                     <th>Действия</th>
                 </tr>
@@ -87,12 +87,12 @@
                     <label for="role">Роль</label>
                     <select id="role" required>
                         <option value="">Выберите роль</option>
-                        <option value="student">Студент</option>
+                        <option value="student">Курсант</option>
                         <option value="teacher">Преподаватель</option>
                     </select>
                 </div>
                 <div class="form-group" id="group-field">
-                    <label for="group">Группа</label>
+                    <label for="group">Взвод</label>
                     <input type="text" id="group">
                 </div>
                 <div class="form-actions">

@@ -44,6 +44,34 @@
                     <div class="scenario-title">Подача воды от цистерны через стационарный лафетный ствол</div>
                 </div>
             </div>
+
+            <div class="scenario-card" onclick="openModal(5)">
+                <div class="scenario-number">05</div>
+                <div class="scenario-info">
+                    <div class="scenario-title">Подача пены через стационарный лафетный ствол</div>
+                </div>
+            </div>
+
+            <div class="scenario-card" onclick="openModal(6)">
+                <div class="scenario-number">06</div>
+                <div class="scenario-info">
+                    <div class="scenario-title">Подача пены на 1 ГПС-600</div>
+                </div>
+            </div>
+
+            <div class="scenario-card" onclick="openModal(7)">
+                <div class="scenario-number">07</div>
+                <div class="scenario-info">
+                    <div class="scenario-title">Забор воды из открытого водоисточника при неисправной вакуумной системе (1 способ)</div>
+                </div>
+            </div>
+
+            <div class="scenario-card" onclick="openModal(8)">
+                <div class="scenario-number">08</div>
+                <div class="scenario-info">
+                    <div class="scenario-title">Забор воды из открытого водоисточника при неисправной вакуумной системе (2 способ)</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -72,13 +100,13 @@
                     <label for="role" class="form-label">Роль</label>
                     <select id="role" class="form-control" onchange="toggleGroupField()" required>
                         <option value="">Выберите роль</option>
-                        <option value="student">Студент</option>
+                        <option value="student">Курсант</option>
                         <option value="teacher">Преподаватель</option>
                     </select>
                 </div>
 
                 <div class="form-group" id="group-field" style="display: none;">
-                    <label for="group" class="form-label">Номер группы</label>
+                    <label for="group" class="form-label">Номер взвода</label>
                     <input type="text" id="group" class="form-control">
                 </div>
 

@@ -1,0 +1,95 @@
+{% extends "dashboard/sidebar.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'dashboard/css/report.css' %}">
+<div class="dashboard-container">
+    <div class="reports-container">
+        <div class="report-controls">
+            <div class="report-type-selector">
+                <h3 class="section-subtitle">Тип отчета</h3>
+                <div class="type-options">
+                    <button class="type-option active" data-type="users">Активные пользователи</button>
+                    <button class="type-option" data-type="scenarios">Сценарии</button>
+                </div>
+            </div>
+            
+            <div class="chart-type-selector">
+                <h3 class="section-subtitle">Тип визуализации</h3>
+                <div class="chart-options">
+                    <button class="chart-option active" data-chart="pie">
+                        <i class="fas fa-chart-pie"></i> Круговая
+                    </button>
+                    <button class="chart-option" data-chart="bar">
+                        <i class="fas fa-chart-bar"></i> Столбчатая
+                    </button>
+                    <button class="chart-option" data-chart="table">
+                        <i class="fas fa-table"></i> Таблица
+                    </button>
+                </div>
+            </div>
+            
+            <div class="report-filters">
+                <div class="filter-group">
+                    <button class="filter-btn" id="report-filter-toggle">Фильтр ▼</button>
+                    <button class="reset-btn" id="report-reset-filter">Сбросить фильтр</button>
+                </div>
+                <div class="filter-dropdown" id="report-filter-dropdown">
+                    <div class="filter-option" data-filter="today">Сегодня</div>
+                    <div class="filter-option" data-filter="week">Неделя</div>
+                    <div class="filter-option" data-filter="month">Месяц</div>
+                    <div class="filter-option">
+                        <input type="date" id="report-date-filter" class="date-input">
+                    </div>
+                    <div class="filter-option">
+                        <select id="report-month-filter" class="select-input">
+                            <option value="">Выбрать месяц</option>
+                            <option value="01">Январь</option>
+                            <option value="02">Февраль</option>
+                            <!-- остальные месяцы -->
+                        </select>
+                    </div>
+                    <div class="filter-option" id="group-filter-container">
+                        <select id="report-group-filter" class="select-input">
+                            <option value="">Все взводы</option>
+                            <option value="ПИ-201">ПИ-201</option>
+                            <option value="ПИ-202">ПИ-202</option>
+                            <option value="ПИ-203">ПИ-203</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="report-content">
+            <!-- Контейнер для графиков -->
+            <div class="chart-container active" id="pie-chart">
+                <canvas id="pieChartCanvas"></canvas>
+            </div>
+            
+            <div class="chart-container" id="bar-chart">
+                <canvas id="barChartCanvas"></canvas>
+            </div>
+            
+            <!-- Контейнер для таблицы -->
+            <div class="table-container" id="report-table">
+                <table class="report-data-table">
+                    <thead>
+                        <tr>
+                            <th>Пользователь</th>
+                            <th>Группа</th>
+                            <th>Активность</th>
+                            <th>Завершенные сценарии</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Данные будут подгружаться через JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'dashboard/js/reports.js' %}"></script>
+{% endblock %}

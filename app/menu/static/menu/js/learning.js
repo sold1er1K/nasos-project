@@ -1,5 +1,52 @@
 let currentScenarioId = 0;
 
+function showStatus(message, type) {
+    const statusDiv = document.getElementById('status');
+    if (!statusDiv) return;
+
+    statusDiv.style.display = 'block';
+    statusDiv.textContent = message;
+
+    // Очищаем предыдущие классы
+    statusDiv.className = 'status-message';
+
+    // Добавляем класс в зависимости от типа сообщения
+    if (type === 'error') {
+        statusDiv.classList.add('error-message');
+    } else if (type === 'success') {
+        statusDiv.classList.add('success-message');
+    } else if (type === 'loading') {
+        statusDiv.classList.add('loading-message');
+    }
+}
+
+// Добавляем стили для статусных сообщений
+const style = document.createElement('style');
+style.textContent = `
+    .status-message {
+        padding: 10px 15px;
+        margin: 10px 0;
+        border-radius: 4px;
+        display: none;
+    }
+    .error-message {
+        background-color: #ffebee;
+        color: #c62828;
+        border-left: 4px solid #c62828;
+    }
+    .success-message {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border-left: 4px solid #2e7d32;
+    }
+    .loading-message {
+        background-color: #e3f2fd;
+        color: #1565c0;
+        border-left: 4px solid #1565c0;
+    }
+`;
+document.head.appendChild(style);
+
 function openModal(scenarioId) {
     currentScenarioId = scenarioId;
     document.getElementById('scenario-id').value = scenarioId;
@@ -30,121 +77,161 @@ function toggleGroupField() {
     }
 }
 
-function launchScenario(event) {
-    event.preventDefault();
+async function getOrCreateUser(formData) {
+    try {
+        const response = await fetch('/check-user/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                lastName: formData.lastName,
+                firstName: formData.firstName,
+                middleName: formData.middleName,
+                role: formData.role,
+                group: formData.group
+            })
+        });
 
-    function getCSRFToken() {
-        const csrfCookie = document.cookie.split('; ')
-            .find(row => row.startsWith('csrftoken='));
-        return csrfCookie ? csrfCookie.split('=')[1] : null;
+        const data = await response.json();
+
+        if (response.ok) {
+            return data.id || data.existing_user_id;
+        } else {
+            throw new Error(data.error || 'Не удалось получить ID пользователя');
+        }
+    } catch (error) {
+        console.error('Ошибка при получении ID пользователя:', error);
+        throw error;
     }
+}
 
-    const csrftoken = getCSRFToken();
+async function loadScenarioHistory(userId) {
+    try {
+        const response = await fetch(`/dashboard/scenario-history/?user_id=${userId}`);
+        const data = await response.json();
 
-    if (!csrftoken) {
-        showStatus("Ошибка безопасности. Пожалуйста, перезагрузите страницу.", 'error');
-        return;
-    }
+        const historyTable = document.getElementById('scenario-history');
+        if (!historyTable) return;
 
-    const formData = {
-        lastName: document.getElementById('last-name').value.trim(),
-        firstName: document.getElementById('first-name').value.trim(),
-        middleName: document.getElementById('middle-name').value.trim(),
-        role: document.getElementById('role').value,
-        group: document.getElementById('role').value === 'student'
-              ? document.getElementById('group').value.trim()
-              : null,
-        scenarioId: currentScenarioId
-    };
+        historyTable.innerHTML = ''; // Очищаем таблицу
 
-    if (!formData.lastName || !formData.firstName || !formData.role) {
-        showStatus('Пожалуйста, заполните все обязательные поля', 'error');
-        return;
-    }
+        if (data.history && data.history.length > 0) {
+            data.history.forEach(item => {
+                const row = document.createElement('tr');
 
-    showStatus("Проверка пользователя...", 'loading');
-    fetch('/check-user/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken
-        },
-        body: JSON.stringify({
-            lastName: formData.lastName,
-            firstName: formData.firstName,
-            middleName: formData.middleName,
-            role: formData.role
-        })
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Ошибка сервера');
-        return response.json();
-    })
-    .then(data => {
-        if (data.exists) {
-            showStatus("Запуск 3D симулятора...", 'loading');
-            return fetch(`/launch-scenario/${currentScenarioId}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken
-                },
-                body: JSON.stringify(formData),
-                credentials: 'include'
+                const scenarioCell = document.createElement('td');
+                scenarioCell.textContent = `Сценарий ${item.scenario_id}`;
+
+                const dateCell = document.createElement('td');
+                dateCell.textContent = new Date(item.start_time).toLocaleString();
+
+                const durationCell = document.createElement('td');
+                durationCell.textContent = item.duration ?
+                    `${parseFloat(item.duration).toFixed(1)} мин` : '-';
+
+                const resultCell = document.createElement('td');
+                resultCell.textContent = item.result || item.status;
+
+                row.appendChild(scenarioCell);
+                row.appendChild(dateCell);
+                row.appendChild(durationCell);
+                row.appendChild(resultCell);
+
+                historyTable.appendChild(row);
             });
         } else {
-            throw new Error('Пользователь не найден');
+            const emptyRow = document.createElement('tr');
+            const emptyCell = document.createElement('td');
+            emptyCell.colSpan = 4;
+            emptyCell.textContent = 'Нет данных о прохождении сценариев';
+            emptyCell.className = 'empty-message';
+            emptyRow.appendChild(emptyCell);
+            historyTable.appendChild(emptyRow);
         }
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(err => {
-                throw new Error(err.error || `HTTP error! status: ${response.status}`);
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        showStatus(data.message || "Сценарий успешно запущен! Перенаправление...", 'success');
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showStatus(error.message, 'error');
-    });
-}
-
-function showStatus(message, type) {
-    const statusDiv = document.getElementById('status');
-    statusDiv.style.display = 'block';
-    statusDiv.textContent = message;
-
-    statusDiv.className = 'status-message';
-
-    if (type === 'error') {
-        statusDiv.classList.add('error-message');
-    } else if (type === 'success') {
-        statusDiv.classList.add('success-message');
-    } else if (type === 'loading') {
-        statusDiv.classList.add('loading-message');
+    } catch (error) {
+        console.error('Ошибка загрузки истории сценариев:', error);
     }
 }
 
-const style = document.createElement('style');
-style.textContent = `
-    .error-message {
-        background-color: #ffebee !important;
-        color: #c62828 !important;
-        border-left: 4px solid #c62828;
-    }
-    .success-message {
-        background-color: #e8f5e9 !important;
-        color: #2e7d32 !important;
-        border-left: 4px solid #2e7d32;
-    }
-    .loading-message {
-        background-color: #e3f2fd !important;
-        color: #1565c0 !important;
-        border-left: 4px solid #1565c0;
+// Добавляем стиль для пустого сообщения
+const historyStyle = document.createElement('style');
+historyStyle.textContent = `
+    .empty-message {
+        text-align: center;
+        padding: 20px;
+        color: #666;
     }
 `;
-document.head.appendChild(style);
+document.head.appendChild(historyStyle);
+
+async function launchScenario(event) {
+    event.preventDefault();
+
+    showStatus("Проверка пользователя...", 'loading');
+
+    try {
+        // 1. Сначала проверяем/создаем пользователя
+        const userData = {
+            lastName: document.getElementById('last-name').value.trim(),
+            firstName: document.getElementById('first-name').value.trim(),
+            middleName: document.getElementById('middle-name').value.trim(),
+            role: document.getElementById('role').value,
+            group: document.getElementById('role').value === 'student'
+                ? document.getElementById('group').value.trim()
+                : null
+        };
+
+        const checkResponse = await fetch('/check-user/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        });
+
+        const checkData = await checkResponse.json();
+
+        if (!checkResponse.ok) {
+            throw new Error(checkData.error || 'Ошибка проверки пользователя');
+        }
+
+        // 2. Запускаем сценарий с полученным userId
+        const formData = {
+            lastName: userData.lastName,
+            firstName: userData.firstName,
+            middleName: userData.middleName,
+            role: userData.role,
+            group: userData.group,
+            userId: checkData.userId,
+            scenarioId: currentScenarioId
+        };
+
+        showStatus("Запуск 3D симулятора...", 'loading');
+
+        const launchResponse = await fetch(`/launch-scenario/${currentScenarioId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (!launchResponse.ok) {
+            const errorData = await launchResponse.json();
+            throw new Error(errorData.error || `Ошибка запуска сценария: ${launchResponse.status}`);
+        }
+
+        const launchData = await launchResponse.json();
+        showStatus(launchData.message || "Сценарий успешно запущен!", 'success');
+
+        // 3. Обновляем историю сценариев
+        if (checkData.userId) {
+            await loadScenarioHistory(checkData.userId);
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        showStatus(error.message, 'error');
+    }
+}
