@@ -357,3 +357,153 @@
         gap: 12px;
     }
 }
+
+/* Новые стили для загрузки Excel */
+.header-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.upload-users-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.upload-users-btn:hover {
+    background: #218838;
+}
+
+.upload-instructions {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.upload-instructions ul {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.upload-instructions li {
+    margin-bottom: 4px;
+}
+
+.file-info {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+.upload-preview {
+    margin-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 20px;
+}
+
+.preview-table-container {
+    max-height: 200px;
+    overflow-y: auto;
+    margin: 12px 0;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+}
+
+.preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.preview-table th,
+.preview-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: left;
+}
+
+.preview-table th {
+    background: #f5f5f7;
+    font-weight: 500;
+    position: sticky;
+    top: 0;
+}
+
+.preview-table tr:hover {
+    background: #f9f9f9;
+}
+
+.preview-stats {
+    font-size: 14px;
+    color: #666;
+    margin-top: 12px;
+}
+
+/* Стили для прогресса загрузки */
+.progress-container {
+    margin: 20px 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #4361ee;
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+.progress-details {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .header-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .add-user-btn,
+    .upload-users-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .preview-table {
+        font-size: 11px;
+    }
+
+    .preview-table th,
+    .preview-table td {
+        padding: 6px 8px;
+    }
+}

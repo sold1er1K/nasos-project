@@ -2,94 +2,129 @@
 {% load static %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'dashboard/css/report.css' %}">
-<div class="dashboard-container">
-    <div class="reports-container">
-        <div class="report-controls">
-            <div class="report-type-selector">
-                <h3 class="section-subtitle">Тип отчета</h3>
-                <div class="type-options">
-                    <button class="type-option active" data-type="users">Активные пользователи</button>
-                    <button class="type-option" data-type="scenarios">Сценарии</button>
+<div class="analytics-container">
+    <div class="header-section">
+        <h2 class="section-title">Аналитика пользователей</h2>
+    </div>
+
+    <div class="analytics-content">
+        <!-- Левая колонка - выбор типа отчета -->
+        <div class="report-types-column">
+            <h3 class="column-title">Типы отчетов</h3>
+            <div class="report-types-list">
+                <div class="report-type-item active" data-report="active-users">
+                    <span class="material-symbols-outlined">group</span>
+                    Активные пользователи
+                </div>
+                <div class="report-type-item" data-report="learning">
+                    <span class="material-symbols-outlined">school</span>
+                    Обучение
+                </div>
+                <div class="report-type-item" data-report="testing">
+                    <span class="material-symbols-outlined">quiz</span>
+                    Тестирование
                 </div>
             </div>
-            
-            <div class="chart-type-selector">
-                <h3 class="section-subtitle">Тип визуализации</h3>
-                <div class="chart-options">
-                    <button class="chart-option active" data-chart="pie">
-                        <i class="fas fa-chart-pie"></i> Круговая
+        </div>
+
+        <!-- Центральная колонка - графики -->
+        <div class="charts-column">
+            <div class="chart-controls">
+                <h3 class="chart-title" id="current-chart-title">Активные пользователи</h3>
+                <div class="chart-type-selector">
+                    <button class="chart-type-btn active" data-type="bar">
+                        <span class="material-symbols-outlined">bar_chart</span>
+                        Столбчатая
                     </button>
-                    <button class="chart-option" data-chart="bar">
-                        <i class="fas fa-chart-bar"></i> Столбчатая
+                    <button class="chart-type-btn" data-type="pie">
+                        <span class="material-symbols-outlined">pie_chart</span>
+                        Круговая
                     </button>
-                    <button class="chart-option" data-chart="table">
-                        <i class="fas fa-table"></i> Таблица
+                    <button class="chart-type-btn" data-type="table">
+                        <span class="material-symbols-outlined">table</span>
+                        Таблица
                     </button>
                 </div>
             </div>
-            
-            <div class="report-filters">
-                <div class="filter-group">
-                    <button class="filter-btn" id="report-filter-toggle">Фильтр ▼</button>
-                    <button class="reset-btn" id="report-reset-filter">Сбросить фильтр</button>
+
+            <div class="chart-container">
+                <!-- Столбчатая диаграмма (активна по умолчанию) -->
+                <div class="chart-content active" id="bar-chart">
+                    <canvas id="barChartCanvas" width="400" height="300"></canvas>
                 </div>
-                <div class="filter-dropdown" id="report-filter-dropdown">
-                    <div class="filter-option" data-filter="today">Сегодня</div>
-                    <div class="filter-option" data-filter="week">Неделя</div>
-                    <div class="filter-option" data-filter="month">Месяц</div>
-                    <div class="filter-option">
-                        <input type="date" id="report-date-filter" class="date-input">
-                    </div>
-                    <div class="filter-option">
-                        <select id="report-month-filter" class="select-input">
-                            <option value="">Выбрать месяц</option>
-                            <option value="01">Январь</option>
-                            <option value="02">Февраль</option>
-                            <!-- остальные месяцы -->
-                        </select>
-                    </div>
-                    <div class="filter-option" id="group-filter-container">
-                        <select id="report-group-filter" class="select-input">
-                            <option value="">Все взводы</option>
-                            <option value="ПИ-201">ПИ-201</option>
-                            <option value="ПИ-202">ПИ-202</option>
-                            <option value="ПИ-203">ПИ-203</option>
-                        </select>
+
+                <!-- Круговая диаграмма -->
+                <div class="chart-content" id="pie-chart">
+                    <canvas id="pieChartCanvas" width="400" height="300"></canvas>
+                </div>
+
+                <!-- Таблица -->
+                <div class="chart-content" id="table-chart">
+                    <div class="analytics-table-container">
+                        <table class="analytics-table">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Активные пользователи</th>
+                                    <th>Курсанты</th>
+                                    <th>Преподаватели</th>
+                                </tr>
+                            </thead>
+                            <tbody id="analytics-table-body">
+                                <!-- Данные будут заполняться через JavaScript -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div class="report-content">
-            <!-- Контейнер для графиков -->
-            <div class="chart-container active" id="pie-chart">
-                <canvas id="pieChartCanvas"></canvas>
+
+        <!-- Правая колонка - фильтры -->
+        <div class="filters-column">
+            <div class="filters-header">
+                <h3 class="filters-title">Фильтры</h3>
+                <button class="reset-filters-btn" id="reset-analytics-filters">
+                    <span class="material-symbols-outlined">refresh</span>
+                    Сбросить
+                </button>
             </div>
-            
-            <div class="chart-container" id="bar-chart">
-                <canvas id="barChartCanvas"></canvas>
+
+            <div class="filter-group">
+                <label>Период</label>
+                <div class="period-buttons">
+                    <button class="period-btn" data-period="today">Сегодня</button>
+                    <button class="period-btn active" data-period="week">Неделя</button>
+                    <button class="period-btn" data-period="month">Месяц</button>
+                </div>
             </div>
-            
-            <!-- Контейнер для таблицы -->
-            <div class="table-container" id="report-table">
-                <table class="report-data-table">
-                    <thead>
-                        <tr>
-                            <th>Пользователь</th>
-                            <th>Группа</th>
-                            <th>Активность</th>
-                            <th>Завершенные сценарии</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Данные будут подгружаться через JS -->
-                    </tbody>
-                </table>
+
+            <div class="filter-group">
+                <label>Конкретная дата</label>
+                <input type="date" class="date-input" id="specific-date">
             </div>
+
+            <div class="filter-group">
+                <label>Конкретный месяц</label>
+                <input type="month" class="month-input" id="specific-month">
+            </div>
+
+            <div class="filter-group">
+                <label>Взвод</label>
+                <select class="group-select" id="group-filter">
+                    <option value="">Все взводы</option>
+                    {% for group in groups %}
+                    <option value="{{ group }}">{{ group }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button class="apply-filters-btn" id="apply-analytics-filters">
+                Применить фильтры
+            </button>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="{% static 'dashboard/js/reports.js' %}"></script>
+<script src="{% static 'dashboard/js/report.js' %}"></script>
 {% endblock %}

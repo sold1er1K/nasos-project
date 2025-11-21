@@ -83,7 +83,7 @@ def launch_scenario(request, scenario_id):
             data = json.loads(request.body)
 
             # Проверяем scenario_id
-            if not 1 <= scenario_id <= 8:
+            if not 1 <= scenario_id <= 12:
                 return JsonResponse({"error": "Неверный номер сценария"}, status=400)
 
             # Проверяем обязательные поля
@@ -111,8 +111,8 @@ def launch_scenario(request, scenario_id):
             )
 
             # Пути к файлам
-            pythonw_path = r"D:\nasos\venv\Scripts\pythonw.exe"
-            script_path = rf"D:\nasos\scenario_{scenario_id}.py"
+            pythonw_path = r"D:\projects\nasos\.venv\Scripts\pythonw.exe"
+            script_path = rf"D:\projects\nasos\taho.py"
 
             # Проверяем существование файла сценария
             if not os.path.exists(script_path):

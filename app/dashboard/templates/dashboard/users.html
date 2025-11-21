@@ -5,9 +5,14 @@
 <div class="users-management-container">
     <div class="header-section">
         <h2 class="section-title">Управление пользователями</h2>
-        <button class="add-user-btn" id="add-user-btn">
-            <span class="material-symbols-outlined">add</span> Добавить пользователя
-        </button>
+        <div class="header-buttons">
+            <button class="add-user-btn" id="add-user-btn">
+                <span class="material-symbols-outlined">add</span> Добавить пользователя
+            </button>
+            <button class="upload-users-btn" id="upload-users-btn">
+                <span class="material-symbols-outlined">upload</span> Загрузить пользователей
+            </button>
+        </div>
     </div>
 
     <div class="notification" id="notification">
@@ -65,6 +70,7 @@
         </table>
     </div>
 
+    <!-- Модальное окно добавления/редактирования пользователя -->
     <div class="modal" id="user-modal">
         <div class="modal-content">
             <button class="close-btn">&times;</button>
@@ -103,6 +109,7 @@
         </div>
     </div>
 
+    <!-- Модальное окно подтверждения удаления -->
     <div class="modal" id="confirm-modal">
         <div class="modal-content small">
             <h3 class="modal-title">Подтверждение удаления</h3>
@@ -113,8 +120,75 @@
             </div>
         </div>
     </div>
+
+    <!-- Новое модальное окно для загрузки Excel -->
+    <div class="modal" id="upload-modal">
+        <div class="modal-content">
+            <button class="close-btn">&times;</button>
+            <h3 class="modal-title">Загрузка пользователей из Excel</h3>
+
+            <div class="upload-instructions">
+                <p><strong>Формат файла:</strong> Excel файл (.xlsx, .xls) с колонками:</p>
+                <ul>
+                    <li><strong>Фамилия</strong> (обязательно)</li>
+                    <li><strong>Имя</strong> (обязательно)</li>
+                    <li><strong>Отчество</strong> (опционально)</li>
+                    <li><strong>Номер группы</strong> (обязательно)</li>
+                </ul>
+                <p>Все загружаемые пользователи будут добавлены как курсанты.</p>
+            </div>
+
+            <form id="upload-form">
+                <div class="form-group">
+                    <label for="excel-file">Выберите Excel файл</label>
+                    <input type="file" id="excel-file" accept=".xlsx,.xls" required>
+                    <div class="file-info" id="file-info"></div>
+                </div>
+
+                <div class="upload-preview" id="upload-preview">
+                    <h4>Предпросмотр данных:</h4>
+                    <div class="preview-table-container">
+                        <table class="preview-table">
+                            <thead>
+                                <tr>
+                                    <th>Фамилия</th>
+                                    <th>Имя</th>
+                                    <th>Отчество</th>
+                                    <th>Группа</th>
+                                </tr>
+                            </thead>
+                            <tbody id="preview-tbody"></tbody>
+                        </table>
+                    </div>
+                    <div class="preview-stats" id="preview-stats"></div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="save-btn" id="upload-submit" disabled>Загрузить пользователей</button>
+                    <button type="button" class="cancel-btn">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно прогресса загрузки -->
+    <div class="modal" id="upload-progress-modal">
+        <div class="modal-content">
+            <button class="close-btn">&times;</button>
+            <h3 class="modal-title">Загрузка пользователей</h3>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-text" id="progress-text">Подготовка к загрузке...</div>
+            </div>
+            <div class="progress-details" id="progress-details"></div>
+        </div>
+    </div>
 </div>
 
+<!-- Подключаем библиотеку для работы с Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="{% static 'dashboard/js/users.js' %}"></script>
 
 {% endblock %}
